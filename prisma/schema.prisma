@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model NGO {
+  id                  String   @id @default(cuid())
+  name                String
+  registrationNumber  String   @unique
+  mission            String
+  yearEstablished    String
+  email              String   @unique
+  phone              String
+  address            String
+  website            String?
+  status             String   @default("pending") // pending, approved, rejected
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  documents          Document[]
+  workPlans          WorkPlan[]
+  reports            Report[]
+}
+
+model Document {
+  id        String   @id @default(cuid())
+  type      String   // registrationCertificate, taxClearance, annualReport
+  url       String
+  ngoId     String
+  ngo       NGO      @relation(fields: [ngoId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WorkPlan {
+  id          String   @id @default(cuid())
+  year        Int
+  activities  String
+  budget      Float
+  ngoId       String
+  ngo         NGO      @relation(fields: [ngoId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Report {
+  id          String   @id @default(cuid())
+  period      String
+  content     String
+  ngoId       String
+  ngo         NGO      @relation(fields: [ngoId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
